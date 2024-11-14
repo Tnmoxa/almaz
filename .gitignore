@@ -72,3 +72,4 @@ docs/_build/
 .python-version
 
 .env
+./docker-compose.override.yml

@@ -1,2 +1,12 @@
 fastapi
 uvicorn
+python-dotenv
+sqlalchemy
+alembic
+psycopg2-binary
+celery[asyncio]
+redis
+requests
+asyncpg
+openai
+httpx[socks]

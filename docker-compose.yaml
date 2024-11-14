@@ -1,0 +1,54 @@
+networks:
+  almaz:
+    driver: bridge
+
+
+services:
+  backend:
+    depends_on:
+      - redis
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    command: "uvicorn almaz.backend:app --host 0.0.0.0 --port 8000 --log-level=info"
+    container_name: almaz-backend
+    networks:
+      - almaz
+    volumes:
+      - ./logs:/almaz/logs
+    ports:
+      - "8000:8000"
+
+
+  postgresql:
+    image: postgresql
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    container_name: almaz-postgresql
+    command: postgres
+    networks:
+      - almaz
+
+
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: almaz-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - almaz
+
+
+  celery_worker:
+    depends_on:
+      - redis
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    command: "celery -A almaz.celery.celery_app worker --loglevel=info"
+    container_name: almaz-celery_worker
+    networks:
+      - almaz
+    volumes:
+      - ./logs:/almaz/logs
