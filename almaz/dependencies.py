@@ -16,6 +16,22 @@ from contextlib import contextmanager
 
 
 class SyncDatabase:
+    """
+        Синхронный класс для работы с базой данных с использованием SQLAlchemy.
+
+        Этот класс позволяет создавать синхронные соединения с базой данных и управлять сессиями.
+        Он использует `create_engine` для создания подключения и `sessionmaker` для создания фабрики сессий.
+
+        Attributes:
+            engine: Экземпляр SQLAlchemy Engine для подключения к базе данных.
+            _session_factory: Фабрика для создания сессий с базой данных.
+
+        Methods:
+            __call__: Создает и управляет сессией базы данных в рамках контекстного менеджера.
+
+        Args:
+            link (str): Строка подключения к базе данных.
+        """
 
     def __init__(self, link: str):
         self.engine = create_engine(link)
@@ -31,6 +47,22 @@ class SyncDatabase:
 
 
 class Database:
+    """
+       Асинхронный класс для работы с базой данных с использованием SQLAlchemy.
+
+       Этот класс создает асинхронное соединение с базой данных и позволяет работать с асинхронными сессиями.
+       Он использует `create_async_engine` для создания асинхронного подключения и `async_sessionmaker` для фабрики асинхронных сессий.
+
+       Attributes:
+           async_engine: Асинхронный SQLAlchemy Engine для подключения к базе данных.
+           _async_session: Фабрика асинхронных сессий для взаимодействия с базой данных.
+
+       Methods:
+           __call__: Создает и управляет асинхронной сессией базы данных в рамках контекстного менеджера.
+
+       Args:
+           link (str): Строка подключения к базе данных.
+       """
 
     def __init__(self, link):
         self.async_engine = create_async_engine(link)
@@ -42,6 +74,22 @@ class Database:
 
 
 class OpenAIApi:
+    """
+       Класс для взаимодействия с API OpenAI с использованием HTTP клиента.
+
+       Этот класс предоставляет интерфейс для подключения к API OpenAI с возможностью проксирования через SOCKS5,
+       если соответствующая переменная окружения задана. В противном случае API подключается напрямую.
+
+       Attributes:
+           client: Экземпляр клиента OpenAI для общения с API.
+           openai_api_chat: Интерфейс для работы с чат-комплектациями OpenAI.
+
+       Methods:
+           __init__: Инициализация клиента OpenAI с заданным API-ключом.
+
+       Args:
+           api_key (str): API-ключ для подключения к OpenAI.
+       """
 
     def __init__(self, api_key):
         if os.environ.get("SOCKS5_URL") and os.environ.get("OPENAI_API_KEY"):
