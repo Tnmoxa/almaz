@@ -1,5 +1,6 @@
 import logging
 import os
+import subprocess
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
@@ -43,16 +44,19 @@ class Database:
 class OpenAIApi:
 
     def __init__(self, api_key):
-        if os.environ.get("SOCKS5_URL"):
+        if os.environ.get("SOCKS5_URL") and os.environ.get("OPENAI_API_KEY"):
             self.client = OpenAI(
                 api_key=api_key,
                 http_client=httpx.Client(proxy=os.environ.get("SOCKS5_URL"))
             )
-        else:
+            self.openai_api_chat = self.client.chat.completions
+        elif os.environ.get("OPENAI_API_KEY"):
             self.client = OpenAI(
                 api_key=api_key,
             )
-        self.openai_api_chat = self.client.chat.completions
+            self.openai_api_chat = self.client.chat.completions
+        else:
+            self.openai_api_chat = None
 
 
 logger = logging.getLogger(__name__)
@@ -77,4 +81,5 @@ openai_api = OpenAIApi(os.environ.get("OPENAI_API_KEY"))
 
 @asynccontextmanager
 async def lifespan(_):
+    subprocess.run(["alembic", "upgrade", "head"], check=True)
     yield
